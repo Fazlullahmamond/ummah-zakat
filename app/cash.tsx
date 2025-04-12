@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Text, StyleSheet } from "react-native";
 import { useTheme } from "./context/ThemeContext";
@@ -10,22 +8,67 @@ import ValueDisplay from "./components/ValueDisplay";
 import ScreenLayout from "./_layout-template";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TabBar from "./_TabBar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CashScreen() {
   const { theme } = useTheme();
   const { values, updateValues, calculations } = useZakat();
 
-  const [cashAtHand, setCashAtHand] = useState(
-    values.cash.cashAtHand.toString()
-  );
-  const [bankAccounts, setBankAccounts] = useState(
-    values.cash.bankAccounts.toString()
-  );
+  const [cashAtHand, setCashAtHand] = useState("");
+  const [bankAccounts, setBankAccounts] = useState("");
 
   useEffect(() => {
+    async function fetchStoredValues() {
+      try {
+        // Fetch stored values from AsyncStorage
+        const storedCashAtHand = await AsyncStorage.getItem("cashAtHand");
+        const storedBankAccounts = await AsyncStorage.getItem("bankAccounts");
+
+        // Log the fetched values for debugging
+        console.log("Fetched storedCashAtHand:", storedCashAtHand);
+        console.log("Fetched storedBankAccounts:", storedBankAccounts);
+
+        // Only set state from AsyncStorage if it's null, otherwise keep the user input
+        setCashAtHand(
+          storedCashAtHand !== null
+            ? storedCashAtHand
+            : values.cash.cashAtHand.toString()
+        );
+
+        setBankAccounts(
+          storedBankAccounts !== null
+            ? storedBankAccounts
+            : values.cash.bankAccounts.toString()
+        );
+      } catch (error) {
+        console.error("Error fetching stored values:", error);
+        setCashAtHand(values.cash.cashAtHand.toString());
+        setBankAccounts(values.cash.bankAccounts.toString());
+      }
+    }
+
+    fetchStoredValues();
+  }, []);
+
+  useEffect(() => {
+    // Log to see when we are saving new values to AsyncStorage
+    console.log("Saving Cash at Hand to AsyncStorage:", cashAtHand);
+    console.log("Saving Bank Accounts to AsyncStorage:", bankAccounts);
+
+    // Store new values into AsyncStorage when they change
+    if (cashAtHand) {
+      AsyncStorage.setItem("cashAtHand", cashAtHand);
+    }
+    if (bankAccounts) {
+      AsyncStorage.setItem("bankAccounts", bankAccounts);
+    }
+  }, [cashAtHand, bankAccounts]);
+
+  useEffect(() => {
+    // Update context when values change
     updateValues("cash", {
-      cashAtHand: Number.parseFloat(cashAtHand) || 0,
-      bankAccounts: Number.parseFloat(bankAccounts) || 0,
+      cashAtHand: parseFloat(cashAtHand) || 0,
+      bankAccounts: parseFloat(bankAccounts) || 0,
     });
   }, [cashAtHand, bankAccounts]);
 
@@ -58,8 +101,7 @@ export default function CashScreen() {
     },
   });
 
-  const totalCash =
-    Number.parseFloat(cashAtHand) + Number.parseFloat(bankAccounts) || 0;
+  const totalCash = parseFloat(cashAtHand) + parseFloat(bankAccounts) || 0;
   const zakatDue = calculations.cashZakat;
 
   return (
@@ -87,11 +129,8 @@ export default function CashScreen() {
 
       <ValueDisplay
         items={[
-          { label: "Cash at Hand", value: Number.parseFloat(cashAtHand) || 0 },
-          {
-            label: "Bank Accounts",
-            value: Number.parseFloat(bankAccounts) || 0,
-          },
+          { label: "Cash at Hand", value: parseFloat(cashAtHand) || 0 },
+          { label: "Bank Accounts", value: parseFloat(bankAccounts) || 0 },
         ]}
         total={{
           label: "Zakat Due on Cash",

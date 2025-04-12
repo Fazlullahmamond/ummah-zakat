@@ -152,21 +152,42 @@ export const ZakatProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [goldPrice, setGoldPrice] = useState(DEFAULT_GOLD_PRICE_PER_GRAM)
   const [silverPrice, setSilverPrice] = useState(DEFAULT_SILVER_PRICE_PER_GRAM)
 
+  // Function to load data from localStorage, or set default if not found
+  const loadFromStorage = () => {
+    const savedValues = localStorage.getItem("zakatValues")
+    const savedGoldPrice = localStorage.getItem("goldPrice")
+    const savedSilverPrice = localStorage.getItem("silverPrice")
+
+    const valuesFromStorage = savedValues ? JSON.parse(savedValues) : defaultZakatValues
+    const goldPriceFromStorage = savedGoldPrice ? parseFloat(savedGoldPrice) : DEFAULT_GOLD_PRICE_PER_GRAM
+    const silverPriceFromStorage = savedSilverPrice ? parseFloat(savedSilverPrice) : DEFAULT_SILVER_PRICE_PER_GRAM
+
+    setValues(valuesFromStorage)
+    setGoldPrice(goldPriceFromStorage)
+    setSilverPrice(silverPriceFromStorage)
+  }
+
   // Update values for a specific category
   const updateValues = (category: keyof ZakatValues, data: any) => {
-    setValues((prev) => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        ...data,
-      },
-    }))
+    setValues((prev) => {
+      const updatedValues = {
+        ...prev,
+        [category]: {
+          ...prev[category],
+          ...data,
+        },
+      }
+      localStorage.setItem("zakatValues", JSON.stringify(updatedValues)) // Save updated values to localStorage
+      return updatedValues
+    })
   }
 
   // Update gold and silver prices
   const updatePrices = (gold: number, silver: number) => {
     setGoldPrice(gold)
     setSilverPrice(silver)
+    localStorage.setItem("goldPrice", gold.toString())
+    localStorage.setItem("silverPrice", silver.toString())
   }
 
   // Calculate Zakat
@@ -202,27 +223,21 @@ export const ZakatProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const agricultureZakat = naturalIrrigationZakat + artificialIrrigationZakat
 
     // Calculate Livestock Zakat (simplified)
-    // In a real app, this would follow complex Islamic rules based on number of animals
-    const camelZakat = Math.floor(values.livestock.camels / 5) * 1 // Simplified
-    const cowZakat = Math.floor(values.livestock.cows / 30) * 1 // Simplified
-    const goatZakat = Math.floor(values.livestock.goats / 40) * 1 // Simplified
-    const sheepZakat = Math.floor(values.livestock.sheep / 40) * 1 // Simplified
+    const camelZakat = Math.floor(values.livestock.camels / 5) * 1
+    const cowZakat = Math.floor(values.livestock.cows / 30) * 1
+    const goatZakat = Math.floor(values.livestock.goats / 40) * 1
+    const sheepZakat = Math.floor(values.livestock.sheep / 40) * 1
 
-    // Convert livestock zakat to monetary value (simplified)
     const livestockZakat = camelZakat * 500 + cowZakat * 300 + goatZakat * 100 + sheepZakat * 100
 
-    // Calculate Total Zakatable Wealth
     const totalZakatableWealth = totalCash + goldValue + silverValue + Math.max(0, netBusinessAssets) + totalInvestments
 
-    // Check if wealth is above Nisab
     const isAboveNisab = totalZakatableWealth >= nisabThreshold
 
-    // Calculate Total Zakat (only if above Nisab)
     const totalZakat = isAboveNisab
       ? cashZakat + goldZakat + businessZakat + investmentsZakat + agricultureZakat + livestockZakat
       : 0
 
-    // Update calculations
     setCalculations({
       cashZakat,
       goldZakat,
@@ -235,6 +250,11 @@ export const ZakatProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       nisabThreshold,
     })
   }
+
+  // Load values from localStorage when the component mounts
+  useEffect(() => {
+    loadFromStorage()
+  }, [])
 
   // Recalculate when values change
   useEffect(() => {

@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native"
-import { useTheme } from "./context/ThemeContext"
-import { useZakat } from "./context/ZakatContext"
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated"
-import { Link } from "expo-router"
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { useTheme } from "./context/ThemeContext";
+import { useZakat } from "./context/ZakatContext";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { Link } from "expo-router";
 import {
   DollarSign,
   GoldIcon,
@@ -14,13 +20,14 @@ import {
   Droplet,
   Feather,
   Heart,
-} from "./navigation/TabIcons"
-import TabBar from "./_TabBar"
-import { SafeAreaView } from "react-native-safe-area-context"
+} from "./navigation/TabIcons";
+import TabBar from "./_TabBar";
+import { SafeAreaView } from "react-native-safe-area-context";
+import ZakatBarChart from "./components/ZakatBarChart";
 
 export default function HomeScreen() {
-  const { theme } = useTheme()
-  const { calculations } = useZakat()
+  const { theme } = useTheme();
+  const { calculations } = useZakat();
 
   const styles = StyleSheet.create({
     container: {
@@ -80,7 +87,9 @@ export default function HomeScreen() {
     },
     nisabStatus: {
       fontSize: 14,
-      color: calculations.isAboveNisab ? theme.colors.success : theme.colors.error,
+      color: calculations.isAboveNisab
+        ? theme.colors.success
+        : theme.colors.error,
       textAlign: "center",
       fontWeight: "bold",
     },
@@ -131,7 +140,7 @@ export default function HomeScreen() {
       height: 60,
       opacity: 0.1,
     },
-  })
+  });
 
   const categories = [
     {
@@ -148,25 +157,25 @@ export default function HomeScreen() {
     },
     {
       name: "Business",
-      icon: <Briefcase color={theme.colors.primary} width={24} height={24}  />,
+      icon: <Briefcase color={theme.colors.primary} width={24} height={24} />,
       description: "Business assets and inventory",
       href: "/business",
     },
     {
       name: "Investments",
-      icon: <TrendingUp color={theme.colors.primary} width={24} height={24}  />,
+      icon: <TrendingUp color={theme.colors.primary} width={24} height={24} />,
       description: "Shares, funds, and crypto",
       href: "/investments",
     },
     {
       name: "Debts",
-      icon: <CreditCard color={theme.colors.primary} width={24} height={24}  />,
+      icon: <CreditCard color={theme.colors.primary} width={24} height={24} />,
       description: "Deduct eligible debts",
       href: "/debts",
     },
     {
       name: "Agriculture",
-      icon: <Droplet color={theme.colors.primary} width={24} height={24}  />,
+      icon: <Droplet color={theme.colors.primary} width={24} height={24} />,
       description: "Crops and produce",
       href: "/agriculture",
     },
@@ -178,16 +187,22 @@ export default function HomeScreen() {
     },
     {
       name: "Sadaqah",
-      icon: <Heart color={theme.colors.error} width={24} height={24}  />,
+      icon: <Heart color={theme.colors.error} width={24} height={24} />,
       description: "Track voluntary charity",
       href: "/sadaqah",
     },
-  ]
+  ];
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: 0 }}>
-        <Animated.View style={styles.header} entering={FadeInDown.delay(100).springify()}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingTop: 0 }}
+      >
+        <Animated.View
+          style={styles.header}
+          entering={FadeInDown.delay(100).springify()}
+        >
           <View
             style={{
               width: 80,
@@ -199,21 +214,33 @@ export default function HomeScreen() {
               marginBottom: theme.spacing.m,
             }}
           >
-            <Text style={{ fontSize: 32, color: theme.colors.primary }}>🌙</Text>
+            <Text style={{ fontSize: 32, color: theme.colors.primary }}>
+              🌙
+            </Text>
           </View>
           <Text style={styles.title}>Ummah Zakat Calculator</Text>
-          <Text style={styles.subtitle}>Calculate your Zakat obligations with ease</Text>
+          <Text style={styles.subtitle}>
+            Calculate your Zakat obligations with ease
+          </Text>
         </Animated.View>
 
-        <Animated.View style={styles.summaryCard} entering={FadeInDown.delay(200).springify()}>
+        <Animated.View
+          style={styles.summaryCard}
+          entering={FadeInDown.delay(200).springify()}
+        >
           <Text style={styles.summaryTitle}>Your Zakat Summary</Text>
-          <Text style={styles.totalAmount}>${calculations.totalZakat.toFixed(2)}</Text>
+          <Text style={styles.totalAmount}>
+            ${calculations.totalZakat.toFixed(2)}
+          </Text>
           <Text style={styles.nisabStatus}>
             {calculations.isAboveNisab
               ? "Your wealth is above Nisab threshold"
               : "Your wealth is below Nisab threshold"}
           </Text>
         </Animated.View>
+
+        {/* Bar Chart showing Zakat by category */}
+        <ZakatBarChart />
 
         <Text style={styles.categoriesTitle}>Categories</Text>
 
@@ -225,10 +252,14 @@ export default function HomeScreen() {
               entering={FadeInUp.delay(300 + index * 50).springify()}
             >
               <Link href={category.href as any} asChild>
-                <TouchableOpacity style={{ width: "100%", alignItems: "center" }}>
+                <TouchableOpacity
+                  style={{ width: "100%", alignItems: "center" }}
+                >
                   <View style={styles.categoryIcon}>{category.icon}</View>
                   <Text style={styles.categoryTitle}>{category.name}</Text>
-                  <Text style={styles.categoryDescription}>{category.description}</Text>
+                  <Text style={styles.categoryDescription}>
+                    {category.description}
+                  </Text>
                 </TouchableOpacity>
               </Link>
             </Animated.View>
@@ -237,5 +268,5 @@ export default function HomeScreen() {
       </ScrollView>
       <TabBar />
     </SafeAreaView>
-  )
+  );
 }

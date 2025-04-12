@@ -73,7 +73,9 @@ export default function TabBar() {
       icon: (
         <PieChart
           color={
-            pathname === "/home" ? theme.colors.primary : theme.colors.text
+            pathname === "/home" || pathname === ""
+              ? theme.colors.primary
+              : theme.colors.text
           }
           width={20}
           height={20}
