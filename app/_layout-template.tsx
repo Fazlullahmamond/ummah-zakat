@@ -11,17 +11,18 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+
 export default function ScreenLayout({ children }: LayoutProps) {
   const { theme } = useTheme();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background, marginBottom: 50 }}>
         <ScrollView style={{ flex: 1, padding: theme.spacing.m }}>
           {children}
         </ScrollView>
-        <TabBar />
       </View>
+      <TabBar />
     </SafeAreaView>
   );
 }

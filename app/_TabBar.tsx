@@ -1,8 +1,13 @@
-"use client"
+"use client";
 
-import { ScrollView, TouchableOpacity, Text, StyleSheet, View } from "react-native"
-import { useTheme } from "./context/ThemeContext"
-import { Link, usePathname } from "expo-router"
+import {
+  ScrollView,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  View,
+} from "react-native";
+import { useTheme } from "./context/ThemeContext";
 import {
   DollarSign,
   GoldIcon,
@@ -13,17 +18,23 @@ import {
   Feather,
   Heart,
   PieChart,
-} from "./navigation/TabIcons"
+} from "./navigation/TabIcons";
+import { useRouter, usePathname } from "expo-router";
 
 export default function TabBar() {
-  const { theme } = useTheme()
-  const pathname = usePathname()
+  const { theme } = useTheme();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const styles = StyleSheet.create({
     tabBarContainer: {
       borderBottomWidth: 1,
+      position: "absolute",
+      bottom: 10,
+      left: 0,
       borderBottomColor: theme.colors.border,
       backgroundColor: theme.colors.background,
+
     },
     tabBar: {
       flexDirection: "row",
@@ -54,61 +65,142 @@ export default function TabBar() {
       color: theme.colors.primary,
       fontWeight: "bold",
     },
-  })
+  });
 
-  // Tabs for navigation
   const tabs = [
     {
       name: "Home",
-      icon: <PieChart color={pathname === "/home" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <PieChart
+          color={
+            pathname === "/home" ? theme.colors.primary : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/home",
     },
     {
       name: "Cash",
-      icon: <DollarSign color={pathname === "/cash" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <DollarSign
+          color={
+            pathname === "/cash" ? theme.colors.primary : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/cash",
     },
     {
       name: "Gold",
-      icon: <GoldIcon color={pathname === "/gold" ? theme.colors.primary : theme.colors.text} size={20} />,
+      icon: (
+        <GoldIcon
+          color={
+            pathname === "/gold" ? theme.colors.primary : theme.colors.text
+          }
+          size={20}
+        />
+      ),
       href: "/gold",
     },
     {
       name: "Business",
-      icon: <Briefcase color={pathname === "/business" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <Briefcase
+          color={
+            pathname === "/business" ? theme.colors.primary : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/business",
     },
     {
       name: "Invest",
-      icon: <TrendingUp color={pathname === "/investments" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <TrendingUp
+          color={
+            pathname === "/investments"
+              ? theme.colors.primary
+              : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/investments",
     },
     {
       name: "Debts",
-      icon: <CreditCard color={pathname === "/debts" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <CreditCard
+          color={
+            pathname === "/debts" ? theme.colors.primary : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/debts",
     },
     {
       name: "Agri",
-      icon: <Droplet color={pathname === "/agriculture" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <Droplet
+          color={
+            pathname === "/agriculture"
+              ? theme.colors.primary
+              : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/agriculture",
     },
     {
       name: "Livestock",
-      icon: <Feather color={pathname === "/livestock" ? theme.colors.primary : theme.colors.text} size={20} />,
+      icon: (
+        <Feather
+          color={
+            pathname === "/livestock" ? theme.colors.primary : theme.colors.text
+          }
+          size={20}
+        />
+      ),
       href: "/livestock",
     },
     {
       name: "Sadaqah",
-      icon: <Heart color={pathname === "/sadaqah" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <Heart
+          color={
+            pathname === "/sadaqah" ? theme.colors.primary : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/sadaqah",
     },
     {
       name: "Summary",
-      icon: <PieChart color={pathname === "/summary" ? theme.colors.primary : theme.colors.text} width={20} height={20} />,
+      icon: (
+        <PieChart
+          color={
+            pathname === "/summary" ? theme.colors.primary : theme.colors.text
+          }
+          width={20}
+          height={20}
+        />
+      ),
       href: "/summary",
     },
-  ]
+  ] as const;
 
   return (
     <View style={styles.tabBarContainer}>
@@ -119,16 +211,30 @@ export default function TabBar() {
         contentContainerStyle={{ paddingHorizontal: theme.spacing.s }}
       >
         {tabs.map((tab) => (
-          <Link key={tab.name} href={tab.href as any} asChild>
-            <TouchableOpacity style={styles.tabItem}>
-              <View style={[styles.iconContainer, pathname === tab.href && styles.activeIconContainer]}>
-                {tab.icon}
-              </View>
-              {/* <Text style={[styles.tabLabel, pathname === tab.href && styles.activeTabLabel]}>{tab.name}</Text> */}
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity
+            key={tab.name}
+            style={styles.tabItem}
+            onPress={() => {
+              if (pathname !== tab.href) {
+                if (tab.href === "/cash") {
+                  router.push(tab.href); // Allow back navigation for Cash
+                } else {
+                  router.replace(tab.href); // Prevent stack buildup for others
+                }
+              }
+            }}
+          >
+            <View
+              style={[
+                styles.iconContainer,
+                pathname === tab.href && styles.activeIconContainer,
+              ]}
+            >
+              {tab.icon}
+            </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
-  )
+  );
 }

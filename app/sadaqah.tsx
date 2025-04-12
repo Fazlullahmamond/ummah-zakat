@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { useTheme } from "./context/ThemeContext"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useZakat } from "./context/ZakatContext"
 import ZakatCard from "./components/ZakatCard"
 import CurrencyInput from "./components/CurrencyInput"
@@ -13,15 +14,48 @@ export default function SadaqahScreen() {
   const { theme } = useTheme()
   const { values, updateValues } = useZakat()
 
-  const [monthlyGoal, setMonthlyGoal] = useState(values.sadaqah.monthlyGoal.toString())
-  const [contributed, setContributed] = useState(values.sadaqah.contributed.toString())
+  // States for monthly goal and contributed amount
+  const [monthlyGoal, setMonthlyGoal] = useState("0")
+  const [contributed, setContributed] = useState("0")
+  const [isLoaded, setIsLoaded] = useState(false) // Flag to ensure async data load first
 
   useEffect(() => {
+    const fetchStoredValues = async () => {
+      const storedGoal = await AsyncStorage.getItem("monthlyGoal")
+      const storedContributed = await AsyncStorage.getItem("contributed")
+
+      // If values are stored, use them, else fallback to default values
+      if (storedGoal !== null) setMonthlyGoal(storedGoal)
+      if (storedContributed !== null) setContributed(storedContributed)
+
+      setIsLoaded(true) // Data has been loaded
+    }
+    fetchStoredValues()
+  }, [])
+
+  useEffect(() => {
+    if (!isLoaded) return
+
+    // Update values in the context whenever either monthly goal or contributed value changes
     updateValues("sadaqah", {
       monthlyGoal: Number.parseFloat(monthlyGoal) || 0,
       contributed: Number.parseFloat(contributed) || 0,
     })
-  }, [monthlyGoal, contributed])
+  }, [monthlyGoal, contributed, isLoaded])
+
+  useEffect(() => {
+    if (isLoaded) {
+      // Only update AsyncStorage when data is ready
+      AsyncStorage.setItem("monthlyGoal", monthlyGoal)
+    }
+  }, [monthlyGoal, isLoaded])
+
+  useEffect(() => {
+    if (isLoaded) {
+      // Only update AsyncStorage when data is ready
+      AsyncStorage.setItem("contributed", contributed)
+    }
+  }, [contributed, isLoaded])
 
   const styles = StyleSheet.create({
     title: {
@@ -125,7 +159,11 @@ export default function SadaqahScreen() {
   // Quick add functions
   const quickAdd = (amount: number) => {
     const newContributed = contributedAmount + amount
-    setContributed(newContributed.toString())
+    if (newContributed <= goalAmount) {
+      setContributed(newContributed.toString())
+    } else {
+      alert("Contributed amount cannot exceed the monthly goal.")
+    }
   }
 
   return (

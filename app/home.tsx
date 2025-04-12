@@ -94,6 +94,7 @@ export default function HomeScreen() {
     categoriesGrid: {
       flexDirection: "row",
       flexWrap: "wrap",
+      marginBottom: 50,
       justifyContent: "space-between",
     },
     categoryCard: {

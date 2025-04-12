@@ -69,6 +69,7 @@ export default function SummaryScreen() {
     },
     nisabContainer: {
       flexDirection: "row",
+      color: theme.colors.text,
       justifyContent: "space-between",
       backgroundColor: calculations.isAboveNisab
         ? theme.colors.success + "20"
@@ -99,7 +100,7 @@ export default function SummaryScreen() {
     },
 
     donateButton: {
-      backgroundColor: theme.colors.success,
+      backgroundColor: theme.colors.secondary,
       padding: theme.spacing.m,
       borderRadius: theme.borderRadius.m,
       flexDirection: "row",
@@ -227,7 +228,6 @@ Status: ${calculations.isAboveNisab ? "Zakat is due" : "Below Nisab threshold"}
           );
         }}
       >
-        <Download color="white" width={20} height={20} />
         <Text style={styles.donateButtonText}>Donate Now</Text>
       </TouchableOpacity>
     </ScreenLayout>
