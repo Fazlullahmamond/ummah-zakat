@@ -1,34 +1,47 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, Share } from "react-native"
-import { useTheme } from "./context/ThemeContext"
-import { useZakat } from "./context/ZakatContext"
-import ZakatCard from "./components/ZakatCard"
-import ZakatSummaryItem from "./components/ZakatSummaryItem"
-import { Download } from "react-native-feather"
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
-import ScreenLayout from "./_layout-template"
+import { useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Share,
+  Linking,
+} from "react-native";
+import { useTheme } from "./context/ThemeContext";
+import { useZakat } from "./context/ZakatContext";
+import ZakatCard from "./components/ZakatCard";
+import ZakatSummaryItem from "./components/ZakatSummaryItem";
+import { Download } from "react-native-feather";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import ScreenLayout from "./_layout-template";
 
 export default function SummaryScreen() {
-  const { theme } = useTheme()
-  const { calculations, goldPrice } = useZakat()
+  const { theme } = useTheme();
+  const { calculations, goldPrice } = useZakat();
 
   // Animated values for count-up effect
-  const animatedTotal = useSharedValue(0)
+  const animatedTotal = useSharedValue(0);
 
   useEffect(() => {
     // Animate the total value
-    animatedTotal.value = withTiming(calculations.totalZakat, { duration: 1500 })
-  }, [calculations.totalZakat])
+    animatedTotal.value = withTiming(calculations.totalZakat, {
+      duration: 1500,
+    });
+  }, [calculations.totalZakat]);
 
   const animatedTotalStyle = useAnimatedStyle(() => {
     return {
       fontSize: 36,
       fontWeight: "bold",
       color: theme.colors.primary,
-    }
-  })
+    };
+  });
 
   const styles = StyleSheet.create({
     title: {
@@ -57,13 +70,17 @@ export default function SummaryScreen() {
     nisabContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
-      backgroundColor: calculations.isAboveNisab ? theme.colors.success + "20" : theme.colors.error + "20",
+      backgroundColor: calculations.isAboveNisab
+        ? theme.colors.success + "20"
+        : theme.colors.error + "20",
       padding: theme.spacing.m,
       borderRadius: theme.borderRadius.m,
       marginBottom: theme.spacing.m,
     },
     nisabText: {
-      color: calculations.isAboveNisab ? theme.colors.success : theme.colors.error,
+      color: calculations.isAboveNisab
+        ? theme.colors.success
+        : theme.colors.error,
       fontWeight: "bold",
     },
     shareButton: {
@@ -80,10 +97,25 @@ export default function SummaryScreen() {
       fontWeight: "bold",
       marginLeft: theme.spacing.s,
     },
-  })
+
+    donateButton: {
+      backgroundColor: theme.colors.success,
+      padding: theme.spacing.m,
+      borderRadius: theme.borderRadius.m,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: theme.spacing.l,
+    },
+    donateButtonText: {
+      color: "white",
+      fontWeight: "bold",
+      marginLeft: theme.spacing.s,
+    },
+  });
 
   // Format the total for display
-  const formattedTotal = calculations.totalZakat.toFixed(2)
+  const formattedTotal = calculations.totalZakat.toFixed(2);
 
   // Share summary function
   const shareSummary = async () => {
@@ -103,51 +135,101 @@ Breakdown:
 
 Nisab Threshold: ${calculations.nisabThreshold.toFixed(2)}
 Status: ${calculations.isAboveNisab ? "Zakat is due" : "Below Nisab threshold"}
-      `
+      `;
 
       await Share.share({
         message,
         title: "Zakat Calculation Summary",
-      })
+      });
     } catch (error) {
-      console.error("Error sharing summary:", error)
+      console.error("Error sharing summary:", error);
     }
-  }
+  };
 
   return (
     <ScreenLayout>
       <Text style={styles.title}>Zakat Summary</Text>
-      <Text style={styles.subtitle}>Complete breakdown of your Zakat obligations</Text>
+      <Text style={styles.subtitle}>
+        Complete breakdown of your Zakat obligations
+      </Text>
 
       <View style={styles.totalContainer}>
         <Text style={styles.totalLabel}>Total Zakat Due</Text>
-        <Animated.Text style={animatedTotalStyle}>${formattedTotal}</Animated.Text>
+        <Animated.Text style={animatedTotalStyle}>
+          ${formattedTotal}
+        </Animated.Text>
       </View>
 
       <View style={styles.nisabContainer}>
         <Text>Nisab Threshold (Gold Standard)</Text>
-        <Text style={styles.nisabText}>${calculations.nisabThreshold.toFixed(2)}</Text>
+        <Text style={styles.nisabText}>
+          ${calculations.nisabThreshold.toFixed(2)}
+        </Text>
       </View>
 
       <View style={styles.nisabContainer}>
         <Text>Status</Text>
-        <Text style={styles.nisabText}>{calculations.isAboveNisab ? "Zakat is due" : "Below Nisab threshold"}</Text>
+        <Text style={styles.nisabText}>
+          {calculations.isAboveNisab ? "Zakat is due" : "Below Nisab threshold"}
+        </Text>
       </View>
 
       <ZakatCard title="Breakdown" delay={100}>
-        <ZakatSummaryItem label="Cash" amount={calculations.cashZakat} delay={100} />
-        <ZakatSummaryItem label="Gold & Silver" amount={calculations.goldZakat} delay={200} />
-        <ZakatSummaryItem label="Business Assets" amount={calculations.businessZakat} delay={300} />
-        <ZakatSummaryItem label="Investments" amount={calculations.investmentsZakat} delay={400} />
-        <ZakatSummaryItem label="Agriculture" amount={calculations.agricultureZakat} delay={500} />
-        <ZakatSummaryItem label="Livestock" amount={calculations.livestockZakat} delay={600} />
-        <ZakatSummaryItem label="Total Zakat" amount={calculations.totalZakat} isTotal={true} delay={700} />
+        <ZakatSummaryItem
+          label="Cash"
+          amount={calculations.cashZakat}
+          delay={100}
+        />
+        <ZakatSummaryItem
+          label="Gold & Silver"
+          amount={calculations.goldZakat}
+          delay={200}
+        />
+        <ZakatSummaryItem
+          label="Business Assets"
+          amount={calculations.businessZakat}
+          delay={300}
+        />
+        <ZakatSummaryItem
+          label="Investments"
+          amount={calculations.investmentsZakat}
+          delay={400}
+        />
+        <ZakatSummaryItem
+          label="Agriculture"
+          amount={calculations.agricultureZakat}
+          delay={500}
+        />
+        <ZakatSummaryItem
+          label="Livestock"
+          amount={calculations.livestockZakat}
+          delay={600}
+        />
+        <ZakatSummaryItem
+          label="Total Zakat"
+          amount={calculations.totalZakat}
+          isTotal={true}
+          delay={700}
+        />
       </ZakatCard>
 
       <TouchableOpacity style={styles.shareButton} onPress={shareSummary}>
         <Download color="white" width={20} height={20} />
         <Text style={styles.shareButtonText}>Share Summary</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.donateButton}
+        onPress={() => {
+          const url = "https://www.example.com/donate";
+          Linking.openURL(url).catch((err) =>
+            console.error("Failed to open URL:", err)
+          );
+        }}
+      >
+        <Download color="white" width={20} height={20} />
+        <Text style={styles.donateButtonText}>Donate Now</Text>
+      </TouchableOpacity>
     </ScreenLayout>
-  )
+  );
 }
