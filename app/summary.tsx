@@ -20,6 +20,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import ScreenLayout from "./_layout-template";
+import { FileText } from "react-native-feather";
 
 export default function SummaryScreen() {
   const { theme } = useTheme();
@@ -113,6 +114,16 @@ export default function SummaryScreen() {
       fontWeight: "bold",
       marginLeft: theme.spacing.s,
     },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: theme.colors.primary + "20",
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      marginBottom: theme.spacing.m,
+    },
   });
 
   // Format the total for display
@@ -149,6 +160,9 @@ Status: ${calculations.isAboveNisab ? "Zakat is due" : "Below Nisab threshold"}
 
   return (
     <ScreenLayout>
+      <View style={styles.iconCircle}>
+        <FileText color={theme.colors.error} width={28} height={28} />
+      </View>
       <Text style={styles.title}>Zakat Summary</Text>
       <Text style={styles.subtitle}>
         Complete breakdown of your Zakat obligations

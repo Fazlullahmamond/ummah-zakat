@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Text, StyleSheet } from "react-native"
+import { Text, StyleSheet, View } from "react-native"
 import { useTheme } from "./context/ThemeContext"
 import { useZakat } from "./context/ZakatContext"
 import ZakatCard from "./components/ZakatCard"
 import CurrencyInput from "./components/CurrencyInput"
 import ValueDisplay from "./components/ValueDisplay"
 import ScreenLayout from "./_layout-template"
+import { TrendingUp } from "./navigation/TabIcons"
 
 export default function InvestmentsScreen() {
   const { theme } = useTheme()
@@ -32,7 +33,7 @@ export default function InvestmentsScreen() {
       fontSize: 24,
       fontWeight: "bold",
       color: theme.colors.text,
-      marginBottom: theme.spacing.m,
+      marginBottom: theme.spacing.s,
       textAlign: "center",
     },
     subtitle: {
@@ -42,9 +43,18 @@ export default function InvestmentsScreen() {
       textAlign: "center",
       opacity: 0.8,
     },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: theme.colors.primary + "20",
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      marginBottom: theme.spacing.m,
+    },
   })
 
-  // Calculate values for display
   const totalInvestments =
     Number.parseFloat(shares) +
       Number.parseFloat(mutualFunds) +
@@ -54,11 +64,21 @@ export default function InvestmentsScreen() {
 
   return (
     <ScreenLayout>
+      {/* Icon */}
+      <View style={styles.iconCircle}>
+        <TrendingUp color={theme.colors.primary} width={28} height={28} />
+      </View>
+
       <Text style={styles.title}>Investments</Text>
       <Text style={styles.subtitle}>Zakat on shares, mutual funds, crypto (if applicable in your fiqh).</Text>
 
       <ZakatCard title="Investment Assets" delay={100}>
-        <CurrencyInput label="Shares" value={shares} onChangeText={setShares} hint="Current market value of shares" />
+        <CurrencyInput
+          label="Shares"
+          value={shares}
+          onChangeText={setShares}
+          hint="Current market value of shares"
+        />
 
         <CurrencyInput
           label="Mutual Funds"

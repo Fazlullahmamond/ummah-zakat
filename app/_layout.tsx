@@ -27,7 +27,7 @@ export default function RootLayoutNav() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <Stack
           screenOptions={{

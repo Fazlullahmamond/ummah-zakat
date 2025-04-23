@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Text, StyleSheet } from "react-native"
+import { Text, StyleSheet, View } from "react-native"
 import { useTheme } from "./context/ThemeContext"
 import { useZakat } from "./context/ZakatContext"
 import ZakatCard from "./components/ZakatCard"
 import CurrencyInput from "./components/CurrencyInput"
 import ValueDisplay from "./components/ValueDisplay"
 import ScreenLayout from "./_layout-template"
+import { Briefcase } from "./navigation/TabIcons"
 
 export default function BusinessScreen() {
   const { theme } = useTheme()
@@ -32,7 +33,7 @@ export default function BusinessScreen() {
       fontSize: 24,
       fontWeight: "bold",
       color: theme.colors.text,
-      marginBottom: theme.spacing.m,
+      marginBottom: theme.spacing.s,
       textAlign: "center",
     },
     subtitle: {
@@ -42,16 +43,31 @@ export default function BusinessScreen() {
       textAlign: "center",
       opacity: 0.8,
     },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: theme.colors.primary + "20",
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      marginBottom: theme.spacing.m,
+    },
   })
 
-  // Calculate values for display
-  const totalAssets = Number.parseFloat(inventory) + Number.parseFloat(receivables) + Number.parseFloat(cash) || 0
+  const totalAssets =
+    Number.parseFloat(inventory) + Number.parseFloat(receivables) + Number.parseFloat(cash) || 0
   const totalLiabilities = Number.parseFloat(liabilities) || 0
   const netAssets = totalAssets - totalLiabilities
   const zakatDue = calculations.businessZakat
 
   return (
     <ScreenLayout>
+      {/* Icon */}
+      <View style={styles.iconCircle}>
+        <Briefcase color={theme.colors.primary} width={28} height={28} />
+      </View>
+
       <Text style={styles.title}>Business Assets</Text>
       <Text style={styles.subtitle}>Add value of stock, receivables, and profits held for over a year.</Text>
 
@@ -70,7 +86,12 @@ export default function BusinessScreen() {
           hint="Money owed to your business"
         />
 
-        <CurrencyInput label="Business Cash" value={cash} onChangeText={setCash} hint="Cash in business accounts" />
+        <CurrencyInput
+          label="Business Cash"
+          value={cash}
+          onChangeText={setCash}
+          hint="Cash in business accounts"
+        />
       </ZakatCard>
 
       <ZakatCard title="Business Liabilities" delay={200}>

@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Text, StyleSheet } from "react-native"
+import { Text, StyleSheet, View } from "react-native"
 import { useTheme } from "./context/ThemeContext"
 import { useZakat } from "./context/ZakatContext"
 import ZakatCard from "./components/ZakatCard"
 import CurrencyInput from "./components/CurrencyInput"
 import ValueDisplay from "./components/ValueDisplay"
 import ScreenLayout from "./_layout-template"
+import { Droplet } from "./navigation/TabIcons"
 
 export default function AgricultureScreen() {
   const { theme } = useTheme()
@@ -28,7 +29,7 @@ export default function AgricultureScreen() {
       fontSize: 24,
       fontWeight: "bold",
       color: theme.colors.text,
-      marginBottom: theme.spacing.m,
+      marginBottom: theme.spacing.s,
       textAlign: "center",
     },
     subtitle: {
@@ -38,15 +39,29 @@ export default function AgricultureScreen() {
       textAlign: "center",
       opacity: 0.8,
     },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: theme.colors.primary + "20",
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      marginBottom: theme.spacing.m,
+    },
   })
 
-  // Calculate values for display
-  const naturalZakat = Number.parseFloat(naturalIrrigation) * 0.1 || 0 // 10%
-  const artificialZakat = Number.parseFloat(artificialIrrigation) * 0.05 || 0 // 5%
+  const naturalZakat = Number.parseFloat(naturalIrrigation) * 0.1 || 0
+  const artificialZakat = Number.parseFloat(artificialIrrigation) * 0.05 || 0
   const totalZakat = naturalZakat + artificialZakat
 
   return (
     <ScreenLayout>
+      {/* Circular Droplet Icon */}
+      <View style={styles.iconCircle}>
+        <Droplet color={theme.colors.primary} width={28} height={28} />
+      </View>
+
       <Text style={styles.title}>Agricultural Produce</Text>
       <Text style={styles.subtitle}>10% (without irrigation), 5% (with irrigation) of total produce.</Text>
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Text, StyleSheet } from "react-native"
+import { Text, StyleSheet, View } from "react-native"
 import { useTheme } from "./context/ThemeContext"
 import { useZakat } from "./context/ZakatContext"
 import ZakatCard from "./components/ZakatCard"
@@ -9,6 +9,9 @@ import WeightInput from "./components/WeightInput"
 import CurrencyInput from "./components/CurrencyInput"
 import ValueDisplay from "./components/ValueDisplay"
 import ScreenLayout from "./_layout-template"
+import {
+  GoldIcon,
+} from "./navigation/TabIcons"
 
 export default function GoldScreen() {
   const { theme } = useTheme()
@@ -38,11 +41,21 @@ export default function GoldScreen() {
       padding: theme.spacing.m,
       backgroundColor: theme.colors.background,
     },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      backgroundColor: theme.colors.secondary + "20",
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      marginBottom: theme.spacing.m,
+    },
     title: {
       fontSize: 24,
       fontWeight: "bold",
       color: theme.colors.text,
-      marginBottom: theme.spacing.m,
+      marginBottom: theme.spacing.s,
       textAlign: "center",
     },
     subtitle: {
@@ -61,7 +74,6 @@ export default function GoldScreen() {
     },
   })
 
-  // Calculate values for display
   const goldValue =
     Number.parseFloat(goldWeight) * (Number.parseFloat(goldPurity) / 24) * Number.parseFloat(goldPriceInput) || 0
   const silverValue =
@@ -71,6 +83,11 @@ export default function GoldScreen() {
 
   return (
     <ScreenLayout>
+      {/* Icon in a circle */}
+      <View style={styles.iconCircle}>
+        <GoldIcon color={theme.colors.secondary} size={28} />
+      </View>
+
       <Text style={styles.title}>Gold & Silver</Text>
       <Text style={styles.subtitle}>Input weight and purity of gold/silver in grams or tolas.</Text>
 
